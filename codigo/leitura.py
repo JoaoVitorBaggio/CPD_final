@@ -1,35 +1,26 @@
 
-from csv        import reader
+from pandas     import read_csv, Series
 from pathlib    import Path
 from typing     import Self
 
-class Tabela_carregada:
+class Tabela_carregada[T]:
     """ Tabela que carrega os itens de um arquivo csv
     I: Tipo de um item da tabela"""
 
     def carregar_tabela(
             self
             , caminho_arquivo   : Path
-            , remover_cabeçalho : bool = True
             ) -> Self:
 
-        with open(caminho_arquivo, 'r') as arquivo_csv:
-            leitor = reader(arquivo_csv)
-            ## FIX
-            """if remover_cabeçalho:
-                # Remove o cabeçalho
-                leitor = leitor[1:]"""
+        with read_csv(caminho_arquivo) as tabela:
 
-            for linha in leitor:
-                try:
-                    self.carregar_item(linha)
-                except ValueError:
-                    ...
+            for linha in tabela:
+                self.carregar_item(linha)
 
         return self
 
-    def carregar_item(self, linha:list[str]) -> Self:
+    def carregar_item(self, linha:Series) -> Self:
         """ Dada uma liha da tabela, inicializa um item 
-        e adiciona à tabela"""
+        e insere na tabela"""
         # A forma que um item é carregado é definida pela tabela
         ...
