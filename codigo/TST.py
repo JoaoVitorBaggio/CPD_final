@@ -1,0 +1,1 @@
+nome = input('Nome a ser consultado: ')
