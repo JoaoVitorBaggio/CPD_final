@@ -65,32 +65,32 @@ class TST(Carregavel):
             return []  # Prefixo não encontrado
         
         # Coleta todas as palavras a partir do nó do prefixo
-        words_with_ids = []
-        self._collect_words(node_at_prefix.middle, prefix, words_with_ids)
+        ids = []
+        self._collect_words(node_at_prefix.middle, prefix, ids)
         
         # Inclui o próprio prefixo se ele for uma palavra completa
         if node_at_prefix.is_end_of_string:
-            words_with_ids.append((prefix, node_at_prefix.id))
+            ids.append(node_at_prefix.id)
         
-        return words_with_ids
+        return ids
     
-    def _collect_words(self, node, current_word, words_with_ids):
+    def _collect_words(self, node, current_word, ids):
         """Recursivamente coleta palavras a partir de um nó."""
         if node is None:
             return
         
         # Coletar na subárvore da esquerda
-        self._collect_words(node.left, current_word, words_with_ids)
+        self._collect_words(node.left, current_word, ids)
         
         # Se o nó atual marca o fim de uma palavra, adicionamos a palavra completa e o ID
         if node.is_end_of_string:
-            words_with_ids.append((current_word + node.character, node.id))
+            ids.append(node.id)
         
         # Continuar na subárvore do meio
-        self._collect_words(node.middle, current_word + node.character, words_with_ids)
+        self._collect_words(node.middle, current_word + node.character, ids)
         
         # Coletar na subárvore da direita
-        self._collect_words(node.right, current_word, words_with_ids)
+        self._collect_words(node.right, current_word, ids)
 
     def carregar_item(self, linha:Series) -> Self:
         self.insert(

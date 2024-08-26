@@ -5,11 +5,17 @@ from pandas     import Series
 from pathlib    import Path
 from typing     import Self
 
-class Usuario:
+class Revisao:
     ...
 
-class Revisao:
-    def __init__(self) -> None:
+class Usuario:
+    def __init__(
+            self, 
+            user_id:int, 
+            revisoes:list[Revisao] = []
+            ) -> None:
+        self.user_id = user_id
+        self.revisoes = revisoes
         pass
 
 class Tabela_Usuarios(Tabela_hash[Usuario, int], Carregavel):

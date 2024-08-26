@@ -1,6 +1,8 @@
 
 from hash       import Tabela_hash
 from leitura    import Carregavel
+from quicksort  import quick_sort
+
 from pandas     import Series
 from typing     import Self
 from pathlib    import Path
@@ -29,7 +31,7 @@ class Jogador:
 
         self.avaliacoes     = 0
         self.nota_total     = 0
-        self.valor_media    = None
+        self.valor_media    = -1
         self.media_correta  = True
 
         return
@@ -52,19 +54,33 @@ class Jogador:
             self.valor_media = None
         return Self
 
+    def imprimir(self) -> str:
+        # Imprime os dados em várias linhas
+        print(f"""{""
+        }sofifa_id          {self.sofifa_id     }{"\n"
+        }short_name         {self.nome_curto    }{"\n"
+        }long_name          {self.nome_longo    }{"\n"
+        }player_positions   {self.posicoes      }{"\n"
+        }nationality        {self.nacionalidade }{"\n"
+        }club_name          {self.nome_clube    }{"\n"
+        }league_name        {self.nome_liga     }{"\n"
+        }rating             {self.media()       }{"\n"
+        }count              {self.avaliacoes    }
+        """)
+
     def __str__(self) -> str:
-        # Imprime os dados do jogador
+        # Imprime os dados do jogador em uma linha
         return f"""{""
-        }sofifa_id           {self.sofifa_id     }{"\n"
-        }short_name          {self.nome_curto    }{"\n"
-        }long_name           {self.nome_longo    }{"\n"
-        }player_positions    {self.posicoes      }{"\n"
-        }nationality         {self.nacionalidade }{"\n"
-        }club_name           {self.nome_clube    }{"\n"
-        }league_name         {self.nome_liga     }{"\n"
-        }rating              {self.media()       }{""
-        }
-        """
+        }{self.sofifa_id     }{", "
+        }{self.nome_curto    }{", "
+        }{self.nome_longo    }{", "
+        }{self.posicoes      }{", "
+        }{self.nacionalidade }{", "
+        }{self.nome_clube    }{", "
+        }{self.nome_liga     }{", "
+        }{self.media()       }{", "
+        }{self.avaliacoes    }{""
+        }"""
 
 class Tabela_Jogadores (
     Tabela_hash[Jogador, int],
@@ -103,3 +119,15 @@ class Tabela_Jogadores (
             nome_liga      = linha["league_name"],
         ))
         return self
+
+    def imprimir_jogadores(self, jogadores:list[Jogador]):
+        if jogadores:
+            print("sofifa_id, short_name, long_name, player_positions, nationality, club_name, league_name, rating, count")
+            for jogador in jogadores:
+                print(jogador)
+        else:
+            print("Nenhum resultado satisfatório.")
+
+class ordenar_jogador_por_nota(quick_sort[Jogador, float]):
+    def criterio(self, elemento: Jogador) -> float:
+        return -elemento.media()
