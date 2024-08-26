@@ -54,15 +54,16 @@ class Jogador:
 
     def __str__(self) -> str:
         # Imprime os dados do jogador
-        return f"""
-        sofifa_id           {self.sofifa_id     } \n
-        short_name          {self.nome_curto    } \n
-        long_name           {self.nome_longo    } \n
-        player_positions    {self.posicoes      } \n
-        nationality         {self.nacionalidade } \n
-        club_name           {self.nome_clube    } \n
-        league_name         {self.nome_liga     } \n
-        rating              {self.media()       } \n
+        return f"""{""
+        }sofifa_id           {self.sofifa_id     }{"\n"
+        }short_name          {self.nome_curto    }{"\n"
+        }long_name           {self.nome_longo    }{"\n"
+        }player_positions    {self.posicoes      }{"\n"
+        }nationality         {self.nacionalidade }{"\n"
+        }club_name           {self.nome_clube    }{"\n"
+        }league_name         {self.nome_liga     }{"\n"
+        }rating              {self.media()       }{""
+        }
         """
 
 class Tabela_Jogadores (
