@@ -5,16 +5,16 @@ from typing     import Self
 
 from icecream   import ic
 
-class Carregavel[T]:
+class Carregavel:
     """ Tabela que carrega os itens de um arquivo csv
     I: Tipo de um item da tabela"""
 
     def carregar_arquivo(
             self
-            , caminho_arquivo   : Path
+            , caminho   : Path
             ) -> Self:
 
-        tabela = read_csv(caminho_arquivo)
+        tabela = read_csv(caminho)
 
         i = 0
         controle = True

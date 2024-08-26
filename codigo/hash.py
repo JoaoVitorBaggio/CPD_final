@@ -1,8 +1,7 @@
 
-from leitura    import Tabela_carregada
 from pathlib    import Path
 
-class Tabela_hash[I, C] (Tabela_carregada):
+class Tabela_hash[I, C]:
     """ Tabela Hash de itens do tipo I, com chave do tipo C"""
 
     # Métodos especiais
@@ -10,15 +9,11 @@ class Tabela_hash[I, C] (Tabela_carregada):
     def __init__(
             self
             , tamanho:int
-            , caminho:Path  | None = None
             ) -> None:
         # Inicialização da tabela vazia
         self.linhas = [list() for i in range(tamanho)]
         self.tamanho = tamanho
         self.ultima_linha_consultada = []
-        if caminho:
-            # Inicialização da tabela com um arquivo
-            self.carregar_tabela(caminho)
         return
 
     def __getitem__(self, chave:C) -> I:

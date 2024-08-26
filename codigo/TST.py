@@ -1,6 +1,9 @@
 
-import csv
-from caminhos import pasta_dados
+# import csv
+from pandas     import read_csv, Series
+from caminhos   import pasta_dados
+from leitura    import Carregavel
+from typing     import Self
 
 class TSTNode:
     def __init__(self, character):
@@ -11,9 +14,11 @@ class TSTNode:
         self.right = None
         self.id = None  # Armazena o ID associado ao fim da palavra
 
-class TST:
-    def __init__(self):
+class TST(Carregavel):
+    def __init__(self, caminho = None):
         self.root = None
+        if caminho:
+            self.carregar_arquivo(caminho)
     
     def insert(self, word, word_id):
         self.root = self._insert(self.root, word, word_id, 0)
@@ -87,46 +92,9 @@ class TST:
         # Coletar na subárvore da direita
         self._collect_words(node.right, current_word, words_with_ids)
 
-### Função para Ler a Terceira Coluna de um CSV e Inserir na TST
-
-def carregar_terceira_coluna_tst(arquivo_csv):
-    tst = TST()
-    
-    # Abrir o arquivo CSV e ler a primeira e terceira colunas
-    with open(arquivo_csv, newline='') as csvfile:
-        leitor_csv = csv.reader(csvfile)
-        for linha in leitor_csv:
-            if len(linha) >= 3:  # Garantir que a linha tenha pelo menos 3 colunas
-                id_valor = linha[0].strip()  # Primeira coluna (ID)
-                valor_terceira_coluna = linha[2].strip()  # Terceira coluna (cidade ou nome)
-                
-                # Inserir o valor na TST com o ID associado
-                tst.insert(valor_terceira_coluna, id_valor)
-
-    return tst
-
-### Função Principal para Interagir com o Usuário
-
-def main():
-    # Carregar a TST a partir da terceira coluna de um arquivo CSV
-    arquivo_csv = pasta_dados / "players.csv"  # Substitua pelo nome do seu arquivo CSV
-    tst = carregar_terceira_coluna_tst(arquivo_csv)
-    
-    # Perguntar ao usuário qual prefixo ele quer procurar
-    while True:
-        prefixo = input("Informe o prefixo a ser pesquisado (ou 'sair' para terminar): ").strip()
-        if prefixo.lower() == 'sair':
-            break
-        
-        # Coletar e exibir todas as palavras que compartilham o prefixo, junto com seus IDs
-        palavras_com_ids = tst.collect_words_with_prefix(prefixo)
-        
-        if palavras_com_ids:
-            for palavra, id_valor in palavras_com_ids:
-                print(f'ID: {id_valor}, Palavra: {palavra}')
-        else:
-            print(f'Nenhuma palavra encontrada com o prefixo "{prefixo}".')
-
-# Executar o programa
-if __name__ == "__main__":
-    main()
+    def carregar_item(self, linha:Series) -> Self:
+        self.insert(
+            word        = linha["long_name"],
+            word_id     = linha["sofifa_id"],
+        )
+        return self

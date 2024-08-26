@@ -68,18 +68,22 @@ class Jogador:
 
 class Tabela_Jogadores (
     Tabela_hash[Jogador, int],
-    Carregavel[Jogador]
+    Carregavel
     ):
 
     """ Tabela que busca os jogadores pelo id"""
 
     def __init__(
             self
-            , caminho: Path
             , tamanho: int
+            , caminho: Path | None = None
             ) -> None:
-        super().__init__(tamanho, caminho=caminho)
-        self.carregar_arquivo(caminho)
+        
+        super().__init__(tamanho)
+
+        if caminho:
+            self.carregar_arquivo(caminho)
+
         return
 
     def hash(self, chave: int) -> int:
