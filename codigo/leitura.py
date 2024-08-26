@@ -5,11 +5,11 @@ from typing     import Self
 
 from icecream   import ic
 
-class Tabela_carregada[T]:
+class Carregavel[T]:
     """ Tabela que carrega os itens de um arquivo csv
     I: Tipo de um item da tabela"""
 
-    def carregar_tabela(
+    def carregar_arquivo(
             self
             , caminho_arquivo   : Path
             ) -> Self:

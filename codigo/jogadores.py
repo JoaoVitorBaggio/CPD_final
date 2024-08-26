@@ -1,6 +1,6 @@
 
 from hash       import Tabela_hash
-from leitura    import Tabela_carregada
+from leitura    import Carregavel
 from pandas     import Series
 from typing     import Self
 from pathlib    import Path
@@ -68,14 +68,18 @@ class Jogador:
 
 class Tabela_Jogadores (
     Tabela_hash[Jogador, int],
-    Tabela_carregada[Jogador]
+    Carregavel[Jogador]
     ):
 
     """ Tabela que busca os jogadores pelo id"""
 
-    def __init__(self, caminho: Path, tamanho: int) -> None:
+    def __init__(
+            self
+            , caminho: Path
+            , tamanho: int
+            ) -> None:
         super().__init__(tamanho, caminho=caminho)
-        self.carregar_tabela(caminho)
+        self.carregar_arquivo(caminho)
         return
 
     def hash(self, chave: int) -> int:

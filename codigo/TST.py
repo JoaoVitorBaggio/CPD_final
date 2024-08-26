@@ -1,4 +1,6 @@
+
 import csv
+from caminhos import pasta_dados
 
 class TSTNode:
     def __init__(self, character):
@@ -107,7 +109,7 @@ def carregar_terceira_coluna_tst(arquivo_csv):
 
 def main():
     # Carregar a TST a partir da terceira coluna de um arquivo CSV
-    arquivo_csv = 'dados\players.csv'  # Substitua pelo nome do seu arquivo CSV
+    arquivo_csv = pasta_dados / "players.csv"  # Substitua pelo nome do seu arquivo CSV
     tst = carregar_terceira_coluna_tst(arquivo_csv)
     
     # Perguntar ao usuário qual prefixo ele quer procurar
