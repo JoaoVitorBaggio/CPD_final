@@ -3,8 +3,6 @@ from pandas     import read_csv, Series
 from pathlib    import Path
 from typing     import Self
 
-from icecream   import ic
-
 class Carregavel:
     """ Tabela que carrega os itens de um arquivo csv
     I: Tipo de um item da tabela"""
