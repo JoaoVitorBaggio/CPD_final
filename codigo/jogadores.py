@@ -46,7 +46,10 @@ class Jogador:
         return self.valor_media
 
     def recalcula_media(self) -> Self:
-        self.valor_media = self.nota_total / self.avaliacoes
+        try:
+            self.valor_media = self.nota_total / self.avaliacoes
+        except ZeroDivisionError:
+            self.valor_media = None
         return Self
 
     def __str__(self) -> str:
@@ -85,7 +88,7 @@ class Tabela_Jogadores (
             sofifa_id      = linha["sofifa_id"],
             nome_curto     = linha["short_name"],
             nome_longo     = linha["long_name"],
-            posicoes       = linha["player_posit"],
+            posicoes       = linha["player_positions"],
             nacionalidade  = linha["nationality"],
             nome_clube     = linha["club_name"],
             nome_liga      = linha["league_name"],
