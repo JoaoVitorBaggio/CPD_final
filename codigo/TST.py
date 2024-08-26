@@ -35,59 +35,35 @@ class TST:
         
         return node
     
-    def _search_node(self, node, prefix, index):
-        """Busca o nó correspondente ao final do prefixo."""
-        if node is None:
-            return None
-        
-        char = prefix[index]
-        
-        if char < node.character:
-            return self._search_node(node.left, prefix, index)
-        elif char > node.character:
-            return self._search_node(node.right, prefix, index)
-        else:
-            if index + 1 == len(prefix):
-                return node
-            return self._search_node(node.middle, prefix, index + 1)
-    
-    def collect_words_with_prefix(self, prefix):
-        """Coleta todas as palavras que compartilham o mesmo prefixo."""
-        node_at_prefix = self._search_node(self.root, prefix, 0)
-        if node_at_prefix is None:
-            return []  # Prefixo não encontrado
-        
-        # Coleta todas as palavras a partir do nó do prefixo
-        words_with_ids = []
-        self._collect_words(node_at_prefix.middle, prefix, words_with_ids)
-        
-        # Inclui o próprio prefixo se ele for uma palavra completa
-        if node_at_prefix.is_end_of_string:
-            words_with_ids.append((prefix, node_at_prefix.id))
-        
-        return words_with_ids
-    
-    def _collect_words(self, node, current_word, words_with_ids):
-        """Recursivamente coleta palavras a partir de um nó."""
+    def _collect_words_with_prefix(self, node, current_word, prefix, results):
+        """Coleta palavras que começam com o prefixo a partir de um nó."""
         if node is None:
             return
         
-        # Coletar na subárvore da esquerda
-        self._collect_words(node.left, current_word, words_with_ids)
+        # Verifica se o nó é relevante para a coleta
+        if node.character == prefix[len(current_word)]:
+            # Se o prefixo está completo, coletar todas as palavras na subárvore
+            if len(current_word) == len(prefix):
+                if node.is_end_of_string:
+                    results.append((current_word, node.id))
+                self._collect_words_with_prefix(node.middle, current_word, prefix, results)
+            else:
+                # Se ainda precisamos de mais caracteres para completar o prefixo
+                self._collect_words_with_prefix(node.middle, current_word + node.character, prefix, results)
         
-        # Se o nó atual marca o fim de uma palavra, adicionamos a palavra completa e o ID
-        if node.is_end_of_string:
-            words_with_ids.append((current_word + node.character, node.id))
-        
-        # Continuar na subárvore do meio
-        self._collect_words(node.middle, current_word + node.character, words_with_ids)
-        
-        # Coletar na subárvore da direita
-        self._collect_words(node.right, current_word, words_with_ids)
+        # Explora a subárvore da esquerda e direita apenas se necessário
+        if node.character > prefix[len(current_word)]:
+            self._collect_words_with_prefix(node.left, current_word, prefix, results)
+        if node.character < prefix[len(current_word)]:
+            self._collect_words_with_prefix(node.right, current_word, prefix, results)
+    
+    def search_for_prefix(self, prefix):
+        """Coleta todas as palavras que começam com o prefixo."""
+        results = []
+        self._collect_words_with_prefix(self.root, "", prefix, results)
+        return results
 
-### Função para Ler a Terceira Coluna de um CSV e Inserir na TST
-
-def carregar_terceira_coluna_tst(arquivo_csv):
+def carregar_colunas_tst(arquivo_csv):
     tst = TST()
     
     # Abrir o arquivo CSV e ler a primeira e terceira colunas
@@ -96,19 +72,17 @@ def carregar_terceira_coluna_tst(arquivo_csv):
         for linha in leitor_csv:
             if len(linha) >= 3:  # Garantir que a linha tenha pelo menos 3 colunas
                 id_valor = linha[0].strip()  # Primeira coluna (ID)
-                valor_terceira_coluna = linha[2].strip()  # Terceira coluna (cidade ou nome)
+                valor_coluna = linha[2].strip()  # Terceira coluna (nome ou cidade)
                 
                 # Inserir o valor na TST com o ID associado
-                tst.insert(valor_terceira_coluna, id_valor)
+                tst.insert(valor_coluna, id_valor)
 
     return tst
 
-### Função Principal para Interagir com o Usuário
-
 def main():
-    # Carregar a TST a partir da terceira coluna de um arquivo CSV
+    # Carregar a TST a partir do arquivo CSV
     arquivo_csv = 'dados\players.csv'  # Substitua pelo nome do seu arquivo CSV
-    tst = carregar_terceira_coluna_tst(arquivo_csv)
+    tst = carregar_colunas_tst(arquivo_csv)
     
     # Perguntar ao usuário qual prefixo ele quer procurar
     while True:
@@ -116,12 +90,13 @@ def main():
         if prefixo.lower() == 'sair':
             break
         
-        # Coletar e exibir todas as palavras que compartilham o prefixo, junto com seus IDs
-        palavras_com_ids = tst.collect_words_with_prefix(prefixo)
+        # Coletar e exibir todas as palavras que começam com o prefixo, junto com seus IDs
+        resultados = tst.search_for_prefix(prefixo)
         
-        if palavras_com_ids:
-            for palavra, id_valor in palavras_com_ids:
-                print(f'ID: {id_valor}, Palavra: {palavra}')
+        if resultados:
+            print(f'Palavras encontradas com o prefixo "{prefixo}":')
+            for palavra, id_valor in resultados:
+                print(f'Nome: {palavra}, ID: {id_valor}')
         else:
             print(f'Nenhuma palavra encontrada com o prefixo "{prefixo}".')
 
