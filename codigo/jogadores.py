@@ -10,51 +10,67 @@ class Jogador:
 
     def __init__(
             self
-            , sofifa_id     :int
-            , nome_curto    :str
-            , nome_longo    :str
-            , posicoes      :str
-            , nacionalidade :str
-            , nome_clube    :str
-            , nome_liga     :str
+            , sofifa_id     :int | None = None
+            , nome_curto    :str | None = None
+            , nome_longo    :str | None = None
+            , posicoes      :str | None = None
+            , nacionalidade :str | None = None
+            , nome_clube    :str | None = None
+            , nome_liga     :str | None = None
             ) -> None:
-        
-        """
-        Conforme o cabeçalho:
-            sofifa_id,short_name,long_name,player_positions,nationality,club_name,league_name
-        """
 
-        self.sofifa_id     = sofifa_id     
-        self.nome_curto    = nome_curto    
-        self.nome_longo    = nome_longo    
-        self.posicoes      = posicoes      
-        self.nacionalidade = nacionalidade 
-        self.nome_clube    = nome_clube    
-        self.nome_liga     = nome_liga     
+        self.sofifa_id      = sofifa_id
+        self.nome_curto     = nome_curto
+        self.nome_longo     = nome_longo
+        self.posicoes       = posicoes
+        self.nacionalidade  = nacionalidade
+        self.nome_clube     = nome_clube
+        self.nome_liga      = nome_liga
+
+        self.avaliacoes     = 0
+        self.nota_total     = 0
+        self.valor_media    = None
+        self.media_correta  = True
 
         return
+
+    def avaliar(self, nota:float) -> Self:
+        self.nota_total += nota
+        self.avaliacoes += 1
+        self.media_correta = False
+        return Self
+
+    def media(self) -> float:
+        if not self.media_correta:
+            self.recalcula_media()
+        return self.valor_media
+
+    def recalcula_media(self) -> Self:
+        self.valor_media = self.nota_total / self.avaliacoes
+        return Self
 
     def __str__(self) -> str:
         # Imprime os dados do jogador
         return f"""
-        sofifa_id           {self.sofifa_id    } \n
-        short_name          {self.nome_curto   } \n
-        long_name           {self.nome_longo   } \n
-        player_positions    {self.posicoes     } \n
-        nationality         {self.nacionalidade} \n
-        club_name           {self.nome_clube   } \n
-        league_name         {self.nome_liga    } \n
+        sofifa_id           {self.sofifa_id     } \n
+        short_name          {self.nome_curto    } \n
+        long_name           {self.nome_longo    } \n
+        player_positions    {self.posicoes      } \n
+        nationality         {self.nacionalidade } \n
+        club_name           {self.nome_clube    } \n
+        league_name         {self.nome_liga     } \n
+        rating              {self.media()       } \n
         """
 
 class Tabela_Jogadores (
     Tabela_hash[Jogador, int],
     Tabela_carregada[Jogador]
     ):
-    
+
     """ Tabela que busca os jogadores pelo id"""
 
     def __init__(self, caminho: Path, tamanho: int) -> None:
-        super().__init__(caminho, tamanho)
+        super().__init__(tamanho, caminho=caminho)
         self.carregar_tabela(caminho)
         return
 
@@ -65,5 +81,13 @@ class Tabela_Jogadores (
         return item.sofifa_id
 
     def carregar_item(self, linha: Series) -> Self:
-        self.inserir(Jogador(*linha))
+        self.inserir(Jogador(
+            sofifa_id      = linha["sofifa_id"],
+            nome_curto     = linha["short_name"],
+            nome_longo     = linha["long_name"],
+            posicoes       = linha["player_posit"],
+            nacionalidade  = linha["nationality"],
+            nome_clube     = linha["club_name"],
+            nome_liga      = linha["league_name"],
+        ))
         return self

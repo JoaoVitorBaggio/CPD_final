@@ -3,6 +3,8 @@ from pandas     import read_csv, Series
 from pathlib    import Path
 from typing     import Self
 
+from icecream   import ic
+
 class Tabela_carregada[T]:
     """ Tabela que carrega os itens de um arquivo csv
     I: Tipo de um item da tabela"""
@@ -12,10 +14,17 @@ class Tabela_carregada[T]:
             , caminho_arquivo   : Path
             ) -> Self:
 
-        with read_csv(caminho_arquivo) as tabela:
+        tabela = read_csv(caminho_arquivo)
 
-            for linha in tabela:
+        i = 0
+        controle = True
+        while controle:
+            try:
+                linha = tabela.iloc[i, :]
                 self.carregar_item(linha)
+                i += 1
+            except IndexError:
+                controle = False
 
         return self
 
