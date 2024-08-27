@@ -91,7 +91,7 @@ class Tabela_Jogadores (
 
     def __init__(
             self
-            , tamanho: int
+            , tamanho: int = 36007
             , caminho: Path | None = None
             ) -> None:
         
@@ -121,13 +121,47 @@ class Tabela_Jogadores (
         return self
 
     def imprimir_jogadores(self, jogadores:list[Jogador]):
+        string_de_formato = "{:<10} {:<20} {:<40} {:<18} {:<20} {:<30} {:<40} {:<10} {:<10}"
         if jogadores:
-            print("sofifa_id, short_name, long_name, player_positions, nationality, club_name, league_name, rating, count")
-            for jogador in jogadores:
-                print(jogador)
+            print(string_de_formato.format(
+                "sofifa_id",
+                "short_name",
+                "long_name",
+                "player_positions",
+                "nationality",
+                "club_name",
+                "league_name",
+                "rating",
+                "count",
+                ))
+            for jogador in jogadores:            
+                print(string_de_formato.format(
+                jogador.sofifa_id,
+                jogador.nome_curto,
+                jogador.nome_longo,
+                jogador.posicoes,
+                jogador.nacionalidade,
+                jogador.nome_clube,
+                jogador.nome_liga,
+                jogador.media(),
+                jogador.avaliacoes,
+                ))
         else:
             print("Nenhum resultado satisfatório.")
 
-class ordenar_jogador_por_nota(quick_sort[Jogador, float]):
+    def melhores_posicao(self, n:int, posicao:str, minimo:int = 1000) -> list[Jogador]:
+        jogadores_selecionados = []
+        for linha in self.linhas:
+            for jogador in linha:
+                jogador:Jogador
+                posicoes = jogador.posicoes.replace(",",'').split()
+                if (posicao in posicoes) and (jogador.avaliacoes >= minimo):
+                    jogadores_selecionados.append(jogador)
+        ordenar_jogadores_por_medias(jogadores_selecionados)
+        jogadores_selecionados = jogadores_selecionados[:n]
+
+        return jogadores_selecionados
+
+class ordenar_jogadores_por_medias(quick_sort[Jogador, float]):
     def criterio(self, elemento: Jogador) -> float:
         return -elemento.media()

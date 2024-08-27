@@ -22,7 +22,7 @@ class Tabela_hash[I, C]:
         for item in linha:
             if self.compara_chaves(item, chave):
                 return item
-        raise NaoEncontrado(chave)
+        raise NaoEncontrado(chave, linha)
 
     def __str__(self) -> str:
         return super().__str__()
@@ -65,8 +65,9 @@ class Tabela_hash[I, C]:
         ...
 
 class NaoEncontrado[C](Exception):
-    def __init__(self, chave:C) -> None:
+    def __init__(self, chave:C, linha:list[C]) -> None:
         self.chave = chave
+        self.linha = linha
         return
     
     def __str__(self) -> str:

@@ -1,40 +1,75 @@
-import csv
 
-class HashTable:
-    def __init__(self):
-        # Dicionário para armazenar os dados (tabela hash)
-        self.hash_table = {}
+from hash       import Tabela_hash, NaoEncontrado
+from leitura    import Carregavel
+from jogadores  import Tabela_Jogadores, Jogador
 
-    def load_from_csv(self, csv_file):
-        # Carrega os dados do arquivo CSV e os insere na tabela hash
-        with open(csv_file, newline='', encoding='utf-8') as csvfile:
-            reader = csv.reader(csvfile)
-            for row in reader:
-                user_id = row[0]  # Coluna 0: ID do usuário
-                jogador_id = row[1]  # Coluna 1: ID do jogador
-                comentario = row[2]  # Coluna 2: Comentário
+from pandas     import Series
+from typing     import Self
+from pathlib    import Path
 
-                # Verifica se o user_id já existe na tabela hash
-                if user_id not in self.hash_table:
-                    self.hash_table[user_id] = []
+class Tag:
+    def __init__(self, texto:str, ids:list[int]=[]) -> None:
+        self.text = texto
+        self.ids = ids
+        return
+    
+    def filtrar(self, lista:list[Jogador]) -> list[Jogador]:
+        lista_filtrada = []
+        for jogador in lista:
+            if jogador.sofifa_id in self.ids:
+                lista_filtrada.append(jogador)
+        return lista_filtrada
+    
+    def obter_jogadores(self, tabela_jogadores:Tabela_Jogadores) -> list[Jogador]:
+        jogadores = [tabela_jogadores[i] for i in self.ids]
+        return jogadores
+    
+    def imprimir_jogadores(self, tabela_jogadores:Tabela_Jogadores) -> Self:
+        jogadores = self.obter_jogadores(tabela_jogadores)
+        tabela_jogadores.imprimir_jogadores(jogadores)
 
-                # Adiciona a tupla (jogador_id, comentario) à lista correspondente ao user_id
-                self.hash_table[user_id].append((jogador_id, comentario))
+        return self
+
+class Tabela_Tags(Tabela_hash[Tag, str], Carregavel):
+    def __init__(self, tamanho: int = 720007, caminho : Path | None = None) -> None:
+        super().__init__(tamanho)
+
+        if caminho:
+            self.carregar_arquivo(caminho)
+
+        return
+
+    def carregar_item(self, linha: Series) -> Self:
+        # user_id     = linha['user_id']
+        sofifa_id   = linha['sofifa_id']
+        texto       = str(linha['tag'])
+
+        try:
+            tag = self[texto]
+        except NaoEncontrado as Erro:
+            tag = Tag(texto, [sofifa_id])
+            Erro.linha.append(tag)
+
+        if not(sofifa_id in tag.ids):
+            tag.ids.append(sofifa_id)
+
+        return self
 
     def get_comentarios_by_user(self, user_id):
         # Retorna a lista de comentários do usuário pelo ID
         return self.hash_table.get(user_id, [])
 
-# Exemplo de uso:
-# Suponha que o arquivo tags.csv tem a seguinte estrutura:
-# ID_Usuario, ID_Jogador, Comentario
-# 1, 101, "Ótimo jogador!"
-# 1, 102, "Precisa melhorar."
-# 2, 101, "Excelente desempenho."
+    def hash(self, chave: str) -> int:
+        return ord(chave[0]) % self.tamanho
+    
+    def get_chave(self, item: Tag) -> str:
+        return item.text
 
-hash_table = HashTable()
-hash_table.load_from_csv("dados/tags.csv")
-
-# Consultando comentários de um usuário
-print(hash_table.get_comentarios_by_user("17800"))  # Saída: [('101', 'Ótimo jogador!'), ('102', 'Precisa melhorar.')]
-#print(hash_table.get_comentarios_by_user("2"))  # Saída: [('101', 'Excelente desempenho.')]
+    def intersect(self, tags:list[str], tabela_jogadores:Tabela_Jogadores) -> list[Jogador]:
+        tag0str = tags.pop(0)
+        tag0 = self[tag0str]
+        jogadores = tag0.obter_jogadores(tabela_jogadores)
+        for tagstr in tags:
+            tag = self[tagstr]
+            jogadores = tag.filtrar(jogadores)
+        return jogadores
