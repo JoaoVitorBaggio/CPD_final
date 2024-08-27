@@ -29,4 +29,4 @@ hash_table = HashTable()
 hash_table.load_from_csv("dados/tags.csv")
 
 # Consultando comentários de um usuário
-print(hash_table.get_comentarios_by_user("17800"))  # Saída: [('101', 'Ótimo jogador!'), ('102', 'Precisa melhorar.')]
+print(hash_table.get_comentarios_by_user("17800"))
