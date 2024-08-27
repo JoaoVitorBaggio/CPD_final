@@ -25,16 +25,8 @@ class HashTable:
         # Retorna a lista de comentários do usuário pelo ID
         return self.hash_table.get(user_id, [])
 
-# Exemplo de uso:
-# Suponha que o arquivo tags.csv tem a seguinte estrutura:
-# ID_Usuario, ID_Jogador, Comentario
-# 1, 101, "Ótimo jogador!"
-# 1, 102, "Precisa melhorar."
-# 2, 101, "Excelente desempenho."
-
 hash_table = HashTable()
 hash_table.load_from_csv("dados/tags.csv")
 
 # Consultando comentários de um usuário
 print(hash_table.get_comentarios_by_user("17800"))  # Saída: [('101', 'Ótimo jogador!'), ('102', 'Precisa melhorar.')]
-#print(hash_table.get_comentarios_by_user("2"))  # Saída: [('101', 'Excelente desempenho.')]
